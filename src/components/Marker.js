@@ -3,17 +3,17 @@ import React, { PropTypes as T } from 'react'
 import { camelize } from '../lib/String'
 const evtNames = ['click', 'mouseover', 'recenter'];
 
-const wrappedPromise = function() {
-    var wrappedPromise = {},
-        promise = new Promise(function (resolve, reject) {
-            wrappedPromise.resolve = resolve;
-            wrappedPromise.reject = reject;
-        });
-    wrappedPromise.then = promise.then.bind(promise);
-    wrappedPromise.catch = promise.catch.bind(promise);
-    wrappedPromise.promise = promise;
+const wrappedPromise = function () {
+  var wrappedPromise = {},
+    promise = new Promise(function (resolve, reject) {
+      wrappedPromise.resolve = resolve;
+      wrappedPromise.reject = reject;
+    });
+  wrappedPromise.then = promise.then.bind(promise);
+  wrappedPromise.catch = promise.catch.bind(promise);
+  wrappedPromise.promise = promise;
 
-    return wrappedPromise;
+  return wrappedPromise;
 }
 
 export class Marker extends React.Component {
@@ -24,9 +24,13 @@ export class Marker extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    if ((this.props.map !== prevProps.map) ||
-      (this.props.position !== prevProps.position)) {
-        this.renderMarker();
+    if (
+      this.props.map !== prevProps.map
+      || this.props.position !== prevProps.position
+      || this.props.icon !== prevProps.icon
+    ) {
+      if (this.marker) this.marker.setMap(null);
+      this.renderMarker();
     }
   }
 
@@ -37,9 +41,7 @@ export class Marker extends React.Component {
   }
 
   renderMarker() {
-    let {
-      map, google, position, mapCenter
-    } = this.props;
+    let { map, google, position, mapCenter, icon } = this.props;
     if (!google) {
       return null
     }
@@ -51,7 +53,8 @@ export class Marker extends React.Component {
 
     const pref = {
       map: map,
-      position: position
+      position: position,
+      icon: icon || null
     };
     this.marker = new google.maps.Marker(pref);
 
@@ -68,7 +71,7 @@ export class Marker extends React.Component {
 
   handleEvent(evt) {
     return (e) => {
-      const evtName = `on${camelize(evt)}`
+      const evtName = `on${camelize(evt)}`;
       if (this.props[evtName]) {
         this.props[evtName](this.props, this.marker, e);
       }
@@ -83,12 +86,12 @@ export class Marker extends React.Component {
 Marker.propTypes = {
   position: T.object,
   map: T.object
-}
+};
 
-evtNames.forEach(e => Marker.propTypes[e] = T.func)
+evtNames.forEach(e => Marker.propTypes[e] = T.func );
 
 Marker.defaultProps = {
   name: 'Marker'
-}
+};
 
 export default Marker
