@@ -13,7 +13,7 @@
   },
   "main": "dist/index.js",
   "scripts": {
-    "preversion": ". ./scripts/prepublish.sh",
+    "preversion": "SET NODE_ENV=production ./node_modules/.bin/babel --plugins 'transform-es2015-modules-umd' --presets 'stage-0,react' --ignore __tests__ --out-dir ./dist src",
     "dev": "SET NODE_ENV=development && webpack",
     "build": "SET NODE_ENV=production && webpack",
     "publish_pages": "gh-pages -d public/",
